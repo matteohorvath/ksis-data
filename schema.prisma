@@ -1,0 +1,22 @@
+datasource db {
+    // could be postgresql or mysql
+    provider = "sqlite"
+    url      = "file:db.sqlite"
+}
+
+generator db {
+    provider             = "prisma-client-py"
+    interface            = "asyncio"
+    recursive_type_depth = 5
+}
+
+model Competition {
+    id         String    @id @default(uuid())
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
+    date       DateTime?
+    title      String?
+    organiser  String?
+    deadline   DateTime?
+    place      String?
+}
