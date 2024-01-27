@@ -1,17 +1,9 @@
 datasource db {
     // could be postgresql or mysql
     provider     = "mysql"
-    url          = "mysql://9jgcfrnmv5nsrqh9vo9x:pscale_pw_eKkh2gSLRWOoctS1pCutlm5xoV2yPvsoXOjNWDAveEc@aws.connect.psdb.cloud/ksis?sslaccept=strict"
+    url          = env("DATABASE_URL")
     relationMode = "prisma"
 }
-
-//prod
-//2lyvj1t4dhgx9menuzqf
-//pscale_pw_plgyKisrsWOsIRpT0x8raD3f8Xga6NTttMNOS06u4li
-
-//dev
-//9jgcfrnmv5nsrqh9vo9x
-//pscale_pw_eKkh2gSLRWOoctS1pCutlm5xoV2yPvsoXOjNWDAveEc
 
 generator db {
     provider             = "prisma-client-py"
