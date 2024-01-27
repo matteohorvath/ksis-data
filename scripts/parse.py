@@ -2,6 +2,7 @@ import asyncio
 from prisma import Prisma
 from bs4 import BeautifulSoup
 from datetime import datetime
+from tqdm import tqdm
 import os
 async def main() -> None:
     db = Prisma()
@@ -12,7 +13,7 @@ async def main() -> None:
     years = glob.glob("data/years/*")
 
     comps = []
-    for y in years:
+    for y in tqdm(years):
         with open(y, "r") as f:
             html = f.read()
             soup = BeautifulSoup(html, "html.parser")
@@ -20,7 +21,7 @@ async def main() -> None:
             for t in table:
                 #month level
                 trs = t.find_all("tr")
-                for tr in trs:
+                for tr in tqdm(trs):
                     #competition level
                     #print(tr.prettify())
                     a_s = tr.find_all("a")
@@ -35,6 +36,7 @@ async def main() -> None:
                         comp_categories.append(a_s[a].text)
                     #print(comp_date, comp_title, comp_place, comp_categories)
                     comps.append([comp_date, comp_title, comp_place, comp_categories])
+                    
                     post = await db.competition.create(
                             {
                                 'deadline' : datetime.fromtimestamp(0),
@@ -44,10 +46,12 @@ async def main() -> None:
                                 'date' : comp_date 
                             }
                     )
+                    print("posted comp ", post)
                     for cats in comp_categories:
                         cat = await db.category.create({'name' : cats,
                                 'competition_id' : post.id
                         })
+                    
     with open("data/upcoming.html", "r") as f:
         html = f.read()
         soup = BeautifulSoup(html, "html.parser")
@@ -87,11 +91,11 @@ async def main() -> None:
                     'date' : date
                 }
             )
+            print("posted ", post)
    
 
     await db.disconnect()
-    os.system("rm ../ksis/prisma/db.sqlite")
-    os.system("cp db.sqlite ../ksis/prisma/db.sqlite")
+    print("done")
 
 
 if __name__ == '__main__':
